@@ -1,0 +1,16 @@
+[package]
+name = "whisper"
+version = "0.1.0"
+authors = ["YuMuuu <curelemonade15@gmail.com>"]
+
+[dependencies]
+vst = "0.2.0"
+# if you aren't following this tutorial to a T, and a newer version
+# has been released, you might wish to get the crate directly
+# off of our official Github repository like this:
+# vst = { git = "https://github.com/rust-dsp/rust-vst" }
+rand = "0.3"
+
+[lib]
+name = "whisper"
+crate-type = ["cdylib"]
