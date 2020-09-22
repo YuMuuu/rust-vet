@@ -1,4 +1,4 @@
-// https://vaporsoft.net/creating-an-audio-plugin-with-rust-vst/
+//ref:  https://vaporsoft.net/creating-an-audio-plugin-with-rust-vst/
 
 #[macro_use]
 extern crate vst;
@@ -6,11 +6,16 @@ extern crate rand;
 
 use vst::plugin::{Info, Plugin, Category};
 use vst::buffer::AudioBuffer;
+use vst::event::Event;
+use vst::api::Events;
 use rand::random;
 
 
 #[derive(Default)]
-struct Whisper;
+struct Whisper {
+    notes: u8
+}
+
 
 impl Plugin for Whisper {
     fn get_info(&self) -> Info {
@@ -26,9 +31,11 @@ impl Plugin for Whisper {
     }
 
     fn process(&mut self, buffer: &mut AudioBuffer<f32>) {
+        // 早期リターンしてる。多分良くない
+        if self.notes == 0 { return }
 
         //inputとoutputのbuffer
-        let (_, output_buffer) = buffer.split();
+        let (_, mut output_buffer) = buffer.split();
 
         //outputチャンネル、ステレオになっている（？
         for output_channel in output_buffer.into_iter() {
@@ -40,9 +47,29 @@ impl Plugin for Whisper {
             }
         }
     }
+
+    fn process_events(&mut self, events: &Events) {
+        for event in events.events() {
+            match event {
+                Event::Midi(ev) => {
+                    // https://www.midi.org/specifications/item/table-1-summary-of-midi-message
+
+                    match ev.data[0] {
+                        // if note on, increment our counter
+                        144 => self.notes += 1u8,
+
+                        // if note off, decrement our counter
+                        128 => self.notes -= 1u8,
+                        _ => (),
+                    }
+                    // if we cared about the pitch of the note, it's stored in `ev.data[1]`.
+                },
+                _ => (),
+            }
+        }
+    }
 }
 
 
 
-// Make sure you call this, or nothing will happen.
 plugin_main!(Whisper);
