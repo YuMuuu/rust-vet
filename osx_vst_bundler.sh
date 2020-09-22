@@ -46,7 +46,7 @@ else
 </plist>" > "$1.vst/Contents/Info.plist"
 
     # move the provided library to the correct location
-    cp "$2" "$1.vst/Contents/MacOS/$1"
+#    cp "$2" "$1.vst/Contents/MacOS/$1"
 
     echo "Created bundle $1.vst"
 fi
