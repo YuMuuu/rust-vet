@@ -2,6 +2,11 @@
 
 # ref: https://github.com/RustAudio/vst-rs/blob/master/osx_vst_bundler.sh
 
+
+# cagro build --release
+# sh ./osx_vst_bundler.sh Plugin target/release/libwhisper.dylib
+
+
 # Make sure we have the arguments we need
 if [[ -z $1 || -z $2 ]]; then
     echo "Generates a macOS bundle from a compiled dylib file"
@@ -46,7 +51,7 @@ else
 </plist>" > "$1.vst/Contents/Info.plist"
 
     # move the provided library to the correct location
-#    cp "$2" "$1.vst/Contents/MacOS/$1"
+    cp "$2" "$1.vst/Contents/MacOS/$1"
 
     echo "Created bundle $1.vst"
 fi

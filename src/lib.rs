@@ -31,11 +31,20 @@ impl Plugin for Whisper {
     }
 
     fn process(&mut self, buffer: &mut AudioBuffer<f32>) {
-        // 早期リターンしてる。多分良くない
-        if self.notes == 0 { return }
-
         //inputとoutputのbuffer
         let (_, mut output_buffer) = buffer.split();
+
+        // We only want to process *anything* if a note is being held.
+        // Else, we can fill the output buffer with silence.
+        if self.notes == 0 {
+            for output_channel in output_buffer.into_iter() {
+                // Let's iterate over every sample in our channel.
+                for output_sample in output_channel {
+                    *output_sample = 0.0;
+                }
+            }
+            return;
+        }
 
         //outputチャンネル、ステレオになっている（？
         for output_channel in output_buffer.into_iter() {
